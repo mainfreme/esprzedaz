@@ -11,10 +11,10 @@ use Spatie\LaravelData\Attributes\Validation\StringType;
 class TagData extends Data
 {
     public function __construct(
-        #[Required, IntegerType, Min(1)]
-        public readonly int $id,
         #[Required, StringType]
-        public readonly string $name
+        public readonly string $name,
+
+        public readonly ?int $id = null,
     )
     {
     }
@@ -22,7 +22,7 @@ class TagData extends Data
     public static function rules(): array
     {
         return [
-            'id' => ['required', 'integer', 'min:1'],
+            'id' => ['nullable', 'integer', 'min:1'],
             'name' => ['required', 'string'],
         ];
     }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
+use App\Enums\PetStatus;
+use Illuminate\Validation\Rules\Enum;
+use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Attributes\Validation\Min;
 use Spatie\LaravelData\Attributes\Validation\Required;
@@ -12,37 +15,50 @@ use Spatie\LaravelData\Attributes\Validation\ArrayType;
 
 class PetData extends Data
 {
-    #[Required, Min(0)]
-    public int $id;
+    #[Min(1)]
+    public ?int $id = null;
 
-    #[Required]
-    public CategoryData $category;
+    public ?CategoryData $category;
 
     #[Required, StringType]
     public string $name;
 
-    #[Required, ArrayType('string')]
+    #[Rule([
+        'required',
+        'array',
+        'min:1',
+    ])]
+    #[ArrayType('string')]
     public array $photoUrls;
 
-    #[Required, ArrayType(TagData::class)]
+    /** @var TagData[] */
+    #[Rule([
+        'required',
+        'array',
+        'min:1',
+    ])]
+    #[ArrayType(TagData::class)]
     public array $tags;
 
-    #[Required, StringType]
+    #[Rule(['required', new Enum(PetStatus::class)])]
     public string $status;
 
+    public ?string $mainPhotoUrl;
+
     public function __construct(
-        int $id,
-        CategoryData $category,
+        ?CategoryData $category,
         string $name,
         array $photoUrls,
         array $tags,
-        string $status
+        string $status,
+        ?int $id = null,
     ) {
-        $this->id = $id;
         $this->category = $category;
         $this->name = $name;
         $this->photoUrls = $photoUrls;
         $this->tags = $tags;
         $this->status = $status;
+        $this->mainPhotoUrl = $photoUrls[0] ?? null;
+        $this->id = $id;
     }
 }
